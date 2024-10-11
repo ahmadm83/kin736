@@ -1,0 +1,111 @@
+---
+title: "Homework Assignment 2"
+author: "Malaikah Ahmad"
+format: pdf
+---
+# PART A
+## Question 1
+```{r}
+library(dplyr)
+library(readr)
+setwd("~/Downloads")
+data <- read.csv("lord-of-the-rings-trilogy.csv")
+```
+
+## Question 2
+
+This data set is not tidy for the following reasons:
+ 
+(1) There are multiple variables in the column names (ex: elf_female, elf_male, Hobbit_female, hobbit_Male, man_Female, Man_male). This is combining both race and gender, while in a tidy data set each variable should have its own column.
+ 
+(2) There is also inconsistent capitalization (Hobbit vs hobbit, Male vs male, and Female vs female) which could cause issues when attempting to manipulate the data set. 
+ 
+(3) This dataset is also in a wide format with different categories of the same variable spread across multiple columns (race and gender). For the set to be tidy, it should be in a longer format with each observation in its own row. 
+
+## Question 3
+If this data set was tidy, it would have 4 columns (movie, race, gender, words_spoken). Since there are 3 movies (The Fellowship of the Ring, The Two Towers, and the Return of the King), 3 races (elf, hobbit, man), and 2 genders (male, female) there will be 18 rows. 
+
+## Question 4
+
+The column names in tidy format would be:
+
+(1) movie
+
+(2) race
+
+(3) gender
+
+(4) words_spoken
+
+# PART B
+
+## Question 1: Tidy the Data Set
+```{r}
+library(tidyr)
+library(dplyr)
+
+setwd("~/Downloads")
+data <- read.csv("lord-of-the-rings-trilogy.csv")
+
+names(data) <- tolower(names(data))
+
+tidy_data <- data %>% 
+  pivot_longer(cols = -movie,
+               names_to = c("race", "gender"),
+               names_sep = "_",
+               values_to = "words_spoken")
+print(tidy_data)
+
+```
+## Question 2a: Total Numbers of Words Spoken by Male Hobbits
+```{r}
+male_hobbits <- tidy_data %>% 
+  filter(race == "hobbit", gender == "male") %>% 
+  summarize(total_words = sum(words_spoken, na.rm = TRUE))
+
+male_hobbits
+```
+The total number of words spoken by male hobbits is 8780. 
+
+## Question 2b: Total Numbers of Words Spoken by Female Elves
+```{r}
+female_elves <- tidy_data %>% 
+  filter(race == "elf", gender == "female") %>% 
+  summarize(total_words = sum(words_spoken, na.rm = TRUE))
+
+female_elves
+```
+The total number of words spoken by female elves is 1743.
+
+## Question 2c: Total Numbers of Words Spoken by Male Elves
+```{r}
+male_elves <- tidy_data %>% 
+  filter(race == "elf", gender == "male") %>% 
+  summarize(total_words = sum(words_spoken, na.rm = TRUE))
+
+male_elves
+```
+The total number of words spoken by male elves is 1994.
+
+## Question 3
+```{r}
+race_dominance <- tidy_data %>% 
+  group_by(movie, race) %>% 
+  summarize(total_words = sum(words_spoken, na.rm = TRUE)) 
+
+print(race_dominance)
+```
+
+Based on this output, the number of spoken words in a movie is dominated by a specific race.
+
+## Question 4
+```{r}
+dominant_race_by_movie <- race_dominance %>%
+  group_by(movie) %>%
+  top_n(1, total_words)
+
+print(dominant_race_by_movie)
+
+```
+
+Yes, the dominant race does depend on the movie. Specifically, "The Fellowship of the Ring" is dominated by hobbits. While "The Return of the King" and "The Two Towers" are dominated by men.
