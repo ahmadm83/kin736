@@ -8,8 +8,7 @@ format: pdf
 ```{r}
 library(dplyr)
 library(readr)
-setwd("~/Downloads")
-data <- read.csv("lord-of-the-rings-trilogy.csv")
+data <- read.csv("./lord-of-the-rings-trilogy.csv")
 ```
 
 ## Question 2
